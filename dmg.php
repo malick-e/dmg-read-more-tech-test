@@ -21,9 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Load textdomain for translations.
  */
-add_action( 'plugins_loaded', function () {
-	load_plugin_textdomain( 'dmg', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-} );
+add_action(
+	'plugins_loaded',
+	function () {
+		load_plugin_textdomain( 'dmg', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	}
+);
 
 /**
  * Register the block from metadata.
@@ -42,11 +45,10 @@ add_action( 'init', 'dmg_read_more_block_init' );
 /**
  * Server-side render callback for Read More block.
  *
- * @param array  $attributes Block attributes.
- * @param string $content    Block content (unused).
+ * @param array $attributes Block attributes.
  * @return string Rendered HTML.
  */
-function dmg_read_more_render_callback( $attributes, $content ) {
+function dmg_read_more_render_callback( $attributes ) {
 	if ( empty( $attributes['postId'] ) || ! is_numeric( $attributes['postId'] ) ) {
 		return '';
 	}

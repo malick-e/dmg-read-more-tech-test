@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "read-more/dmg",
+	"version": "0.1.0",
+	"title": "Read More",
+	"category": "text",
+	"icon": "admin-links",
+	"description": "Read More block for DMG tech test",
+	"example": {},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "dmg",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js"
+}

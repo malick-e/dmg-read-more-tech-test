@@ -1,0 +1,21 @@
+{
+	"name": "dmg",
+	"version": "0.1.0",
+	"description": "Read More block for DMG tech test",
+	"author": "Malick Elgmati",
+	"license": "GPL-2.0-or-later",
+	"homepage": "https://www.dmgmedia.co.uk/",
+	"main": "build/index.js",
+	"scripts": {
+		"build": "wp-scripts build --blocks-manifest",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start --blocks-manifest"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.27.0"
+	}
+}

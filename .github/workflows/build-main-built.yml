@@ -1,0 +1,84 @@
+name: Build main-built
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer
+
+      - name: Install JS deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Composer deps (no-dev) if any
+        run: |
+          if [ -f composer.json ]; then
+            composer install --no-dev --prefer-dist --no-progress
+          fi
+
+      - name: Assemble clean dist
+        run: |
+          set -e
+          rm -rf dist
+          mkdir -p dist
+
+          # ⬇️ Keep ONLY what WP needs to run the plugin
+          # Adjust this list to match your repo layout.
+          cp dmg.php dist/ || true
+          cp README.md dist/ || true
+          cp readme.txt dist/ || true
+          cp LICENSE dist/ || true
+          cp -R build dist/build || true
+          cp -R commands dist/commands || true
+          cp -R languages dist/languages || true
+
+          # If you have other runtime PHP (e.g., inc/, src/ PHP), include them:
+          # cp -R inc dist/inc || true
+
+          # Sanity checks
+          echo "Dist contents:"
+          ls -la dist
+          test -f dist/dmg.php || (echo "dmg.php missing from dist/"; exit 1)
+
+      - name: Commit dist to main-built branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          cd dist
+          git init
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Build: ${GITHUB_SHA}"
+
+          # Force-push dist/ as the content of main-built
+          git branch -M main-built
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+          git push -f origin main-built

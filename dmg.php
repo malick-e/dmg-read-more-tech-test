@@ -69,3 +69,17 @@ function dmg_read_more_render_callback( $attributes, $content ) {
 		$title
 	);
 }
+
+/**
+ * WP-CLI: dmg-read-more search
+ *
+ * Usage:
+ *   wp dmg-read-more search [--date-after=<Y-m-d>|<Y-m-d H:i:s>] [--date-before=<Y-m-d>|<Y-m-d H:i:s>]
+ *
+ * Examples:
+ *   wp dmg-read-more search
+ *   wp dmg-read-more search --date-after=2025-01-01 --date-before=2025-02-01
+ */
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once __DIR__ . '/commands/class-dmg-read-more-cli.php';
+}

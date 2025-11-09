@@ -1,9 +1,47 @@
-/**
- * The following styles get applied inside the editor only.
- *
- * Replace them with your own styles or remove the file completely.
- */
+.dmg-subheading {
+	margin: 8px 0;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: .02em;
+	color: #555;
+}
 
-.wp-block-read-more-dmg {
-	border: 1px dotted #f00;
+.dmg-post-list {
+	margin-top: 4px;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	background: #fff;
+	overflow: hidden;
+}
+
+.dmg-post-item {
+	padding: 6px 10px;
+	margin: 10px 0;
+}
+
+.dmg-post-link {
+	display: block;
+	width: 100%;
+	text-align: left;
+	padding: 6px 0;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.dmg-post-link:hover,
+.dmg-post-link:focus {
+	text-decoration: underline;
+	outline: none;
+}
+
+.dmg-post-list .dmg-post-sep {
+	border: 0;
+	border-top: 1px solid #eee;
+	margin: 20px 0 -5px 0;
+}
+
+.dmg-pagination {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
 }

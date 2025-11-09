@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name:       Read More
+ * Plugin Name:       DMG Read More
  * Plugin URI:        https://www.dmgmedia.co.uk/
  * Description:       Read More block for DMG tech test
  * Version:           0.1.0
  * Requires at least: 6.7
- * Requires PHP:      7.4
+ * Requires PHP:      8.1
  * Author:            Malick Elgmati
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -15,46 +15,57 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
+
 /**
- * Registers the block using a `blocks-manifest.php` file, which improves the performance of block type registration.
- * Behind the scenes, it also registers all assets so they can be enqueued
- * through the block editor in the corresponding context.
- *
- * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
- * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
+ * Load textdomain for translations.
  */
-function read_more_dmg_block_init() {
-	/**
-	 * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
-	 * based on the registered block metadata.
-	 * Added in WordPress 6.8 to simplify the block metadata registration process added in WordPress 6.7.
-	 *
-	 * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
-	 */
-	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
-		wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
-		return;
+add_action( 'plugins_loaded', function () {
+	load_plugin_textdomain( 'dmg', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+} );
+
+/**
+ * Register the block from metadata.
+ */
+function dmg_read_more_block_init() {
+	$block_dir = __DIR__ . '/build/dmg';
+	register_block_type_from_metadata(
+		$block_dir,
+		array(
+			'render_callback' => 'dmg_read_more_render_callback',
+		)
+	);
+}
+add_action( 'init', 'dmg_read_more_block_init' );
+
+/**
+ * Server-side render callback for Read More block.
+ *
+ * @param array  $attributes Block attributes.
+ * @param string $content    Block content (unused).
+ * @return string Rendered HTML.
+ */
+function dmg_read_more_render_callback( $attributes, $content ) {
+	if ( empty( $attributes['postId'] ) || ! is_numeric( $attributes['postId'] ) ) {
+		return '';
 	}
 
-	/**
-	 * Registers the block(s) metadata from the `blocks-manifest.php` file.
-	 * Added to WordPress 6.7 to improve the performance of block type registration.
-	 *
-	 * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
-	 */
-	if ( function_exists( 'wp_register_block_metadata_collection' ) ) {
-		wp_register_block_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
+	$post_id = (int) $attributes['postId'];
+	$post    = get_post( $post_id );
+
+	if ( ! $post || 'publish' !== $post->post_status ) {
+		return '';
 	}
-	/**
-	 * Registers the block type(s) in the `blocks-manifest.php` file.
-	 *
-	 * @see https://developer.wordpress.org/reference/functions/register_block_type/
-	 */
-	$manifest_data = require __DIR__ . '/build/blocks-manifest.php';
-	foreach ( array_keys( $manifest_data ) as $block_type ) {
-		register_block_type( __DIR__ . "/build/{$block_type}" );
-	}
+
+	$title     = esc_html( get_the_title( $post ) );
+	$permalink = esc_url( get_permalink( $post ) );
+	$prefix    = esc_html__( 'Read More: ', 'dmg' );
+
+	return sprintf(
+		'<p class="dmg-read-more">%s<a href="%s">%s</a></p>',
+		$prefix,
+		$permalink,
+		$title
+	);
 }
-add_action( 'init', 'read_more_dmg_block_init' );
